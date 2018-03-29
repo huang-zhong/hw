@@ -1,9 +1,10 @@
 package com.palpay.mq.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.JmsMessagingTemplate;
 
 import javax.jms.Destination;
+import javax.jms.Queue;
 
 /**
  * <p>描述: 消息生产者 </p>
@@ -16,11 +17,26 @@ import javax.jms.Destination;
 public class JMSProducerUtil {
 
     @Autowired
-    private JmsTemplate jmsTemplate;
+    private JmsMessagingTemplate jmsMessagingTemplate;
 
-    public void send(Object event,Destination destination,SprayMessageConverter messageConverter) {
-        jmsTemplate.setMessageConverter(messageConverter);
-        jmsTemplate.setDefaultDestination(destination);
-        jmsTemplate.convertAndSend(event);
+    private Queue queue;
+
+    /**
+     *
+     * @param msg
+     * @param destination
+     * @param messageConverter
+     */
+    public void send(String msg,Destination destination,SprayMessageConverter messageConverter) {
+        jmsMessagingTemplate.setJmsMessageConverter(messageConverter);
+        jmsMessagingTemplate.setDefaultDestination(destination);
+        jmsMessagingTemplate.convertAndSend(msg);
+    }
+
+    /**
+     * @param msg
+     */
+    public void send(String msg){
+        jmsMessagingTemplate.convertAndSend(queue,msg);
     }
 }
